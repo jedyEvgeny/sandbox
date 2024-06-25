@@ -19,7 +19,7 @@ func isPalindrome(x int) bool {
 }
 
 func main() {
-	fmt.Println("Поиск числапалиндрома")
+	fmt.Println("Поиск числа-палиндрома")
 	fmt.Println("Палиндром - когда справа налево читается как слева направо")
 	fmt.Println("-------------")
 	fmt.Println("Введите число для проверки")
