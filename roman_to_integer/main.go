@@ -23,34 +23,19 @@ func romanToInt(s string) int {
 		"D": 500,
 		"M": 1000,
 	}
-	sliceRoman := make([]string, len(s))
-	for idx, v := range s {
-		sliceRoman[idx] = string(v)
-	}
+
 	var result int
-	for i := 0; i < len(s); i++ {
-		valNum := repo[sliceRoman[i]]
-		result = result + valNum
-		if i > 0 {
-			if (sliceRoman[i] == "V" || sliceRoman[i] == "X") && sliceRoman[i-1] == "I" {
-				result--
-				if i < len(s)-1 {
-					i++
-				}
-			}
-			if (sliceRoman[i] == "L" || sliceRoman[i] == "C") && sliceRoman[i-1] == "X" {
-				result -= 10
-				if i < len(s)-1 {
-					i++
-				}
-			}
-			if (sliceRoman[i] == "D" || sliceRoman[i] == "M") && sliceRoman[i-1] == "C" {
-				result -= 100
-				if i < len(s)-1 {
-					i++
-				}
-			}
+	prev := 0
+
+	for i := len(s) - 1; i >= 0; i-- {
+		val := repo[string(s[i])]
+		if val < prev {
+			result -= val
+		} else {
+			result += val
 		}
+		prev = val
 	}
+
 	return result
 }
