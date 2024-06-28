@@ -23,10 +23,7 @@ func romanToInt(s string) int {
 		"D": 500,
 		"M": 1000,
 	}
-
-	var result int
-	prev := 0
-
+	var result, prev int
 	for i := len(s) - 1; i >= 0; i-- {
 		val := repo[string(s[i])]
 		if val < prev {
@@ -36,6 +33,5 @@ func romanToInt(s string) int {
 		}
 		prev = val
 	}
-
 	return result
 }
