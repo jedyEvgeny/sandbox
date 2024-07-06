@@ -1,16 +1,55 @@
-Задача из Яндекс-контеста
-Пройдены не все тесты. Т.е., задача решена частично
-Условия: на вход подаётся строка из строчных английских букв, пробелов и запятых. Строка начинается с буквы
-Нужно:
-1. Найти самое длинное слово. Под словом понимается именно слово из букв
-2. При выводе удалить лишние пробелы, например между словом и стоящей за ней запятой
-3. При выводе в одну строку можно выводить не более утроенной длины самого длинного слова
-4. Если слово не помещается в текущую строку, его нужно выводить в следующей строке
-5. Строка заканчивается или буквой или запятой
-6. После запятой ставится пробел, если это не последний символ строки
-7. Запятая из исходной строки должна быть единым целым со словом, стоящим перед ним
-Гарантируется:
-- В исходной строке между двумя запятыми есть непустое слово
-- Исходная строка начинается с буквы
-- В тексте нет двух пробелов подряд
-- В единственной строке w (1≤∣w∣≤10^5) символов.
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+func main() {
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+
+	// input := "b,,,,,,,,,,,,dc,,,,,"
+	// input := "a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,yandex"
+	// input := "once upon a time, in a land far far away lived a princess , whose beauty was yet unmatched,  dd fdffdsdf,"
+
+	sliceWords := strings.FieldsFunc(input, func(r rune) bool {
+		return !('a' <= r && r <= 'z')
+	})
+
+	var bestWord int
+	for _, word := range sliceWords {
+		if len(word) > bestWord {
+			bestWord = len(word)
+		}
+	}
+
+	words := strings.SplitAfter(input, ",")
+	str := strings.Join(words, " ")
+	sliceWithoutSpaces := strings.Fields(str)
+	maxLength := bestWord * 3
+
+	var currentLine string
+
+	for _, word := range sliceWithoutSpaces {
+
+		if len(currentLine)+len(word) <= maxLength && (word == "," || currentLine == "") {
+			currentLine += word
+			continue
+		}
+
+		if len(currentLine)+len(word)+1 <= maxLength {
+			currentLine += " " + word
+			continue
+		}
+
+		fmt.Println(currentLine)
+		currentLine = word
+	}
+
+	if len(currentLine) > 0 {
+		fmt.Println(currentLine)
+	}
+}
