@@ -1,10 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func main() {
 	sliceStr := []string{"flower", "flow", "flight"}
 	commonPrefix := findCommonPrefix(sliceStr)
+	// commonPrefix := longestCommonPrefix(sliceStr)
+	// commonPrefix := longestCommonPrefixShort(sliceStr)
 	fmt.Println(commonPrefix)
 }
 
@@ -47,4 +52,33 @@ func findCommonPrefix(arr []string) string {
 		countCommonLetter = 0
 	}
 	return ans
+}
+
+// Более короткий и эффективный алгоритм
+func longestCommonPrefix(strs []string) string {
+	if len(strs) == 0 {
+		return ""
+	}
+	prefix := strs[0]
+	for i := 1; i < len(strs); i++ {
+		for strings.Index(strs[i], prefix) != 0 {
+			prefix = prefix[:len(prefix)-1]
+			if prefix == "" {
+				return ""
+			}
+		}
+	}
+	return prefix
+}
+
+// Ещё более кототкий алгоритм
+func longestCommonPrefixShort(strs []string) string {
+	p := strs[0]
+	for _, s := range strs {
+		i := 0
+		for ; i < len(s) && i < len(p) && p[i] == s[i]; i++ {
+		}
+		p = p[:i]
+	}
+	return p
 }
