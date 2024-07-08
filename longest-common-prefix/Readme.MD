@@ -1,4 +1,5 @@
 Задача с литкод: https://leetcode.com/problems/longest-common-prefix/submissions/1313918653/
+В коде представлены три решения
 
 Напишите функцию для поиска самой длинной строки общего префикса среди массива строк.
 
@@ -8,6 +9,7 @@ Example 1:
 
 Input: strs = ["flower","flow","flight"]
 Output: "fl"
+
 Example 2:
 
 Input: strs = ["dog","racecar","car"]
