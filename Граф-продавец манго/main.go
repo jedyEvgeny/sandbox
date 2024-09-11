@@ -1,62 +1,73 @@
 /*
-Программа ищет продавца манго среди ваших друзей и друзей ваших друзей
-Условие для продавца манго - фамилия заканчисается на m
+Программа проверяет, есть ли среди ваших знакомых или знакомых ваших знакомых нужная персона
+т.е. - есть ли связь
 Пример программы на графы
 */
-
 package main
 
-var graph = make(map[string][]string)
+import "fmt"
 
 func main() {
-	graph["you"] = []string{"alice", "bob", "claire"}
-	graph["bob"] = []string{"anuj", "peggy"}
-	graph["alice"] = []string{"peggy"}
-	graph["claire"] = []string{"thom", "jonny"}
-	graph["anuj"] = []string{}
-	graph["peggy"] = []string{}
-	graph["thom"] = []string{}
-	graph["jonny"] = []string{}
+	graph := make(map[string][]string)
 
-	search("you")
+	graph["Вы"] = []string{"Человек", "Покемон", "Горыныч"}
+
+	graph["Человек"] = []string{"Лиса", "Медведь", "Тигр", "Вы"}
+	graph["Покемон"] = []string{"Дигимон", "Эш", "Эшли", "Вы"}
+	graph["Горыныч"] = []string{"Яга", "Василиса", "Иван", "Вы"}
+
+	graph["Лиса"] = []string{"Орк", "Гоблин", "Человек"}
+	graph["Медведь"] = []string{"Пчела", "Медведица", "Человек"}
+	graph["Тигр"] = []string{"Леопард", "Человек"}
+
+	graph["Дигимон"] = []string{"Покемон"}
+	graph["Эш"] = []string{"Покемон"}
+	graph["Эшли"] = []string{"Покемон"}
+
+	graph["Яга"] = []string{"Горыныч"}
+	graph["Василиса"] = []string{"Горыныч"}
+	graph["Иван"] = []string{"Горыныч"}
+
+	graph["Орк"] = []string{"Лиса"}
+	graph["Гоблин"] = []string{"Лиса"}
+	graph["Пчела"] = []string{"Медведь"}
+	graph["Медведица"] = []string{"Медведь"}
+	graph["Леопард"] = []string{"Тигр"}
+
+	target := "Василиса"
+
+	search("Вы", target, graph)
 }
 
-func search(name string) bool {
-	var searchQueue []string //Очередь для поиска
-	searchQueue = append(searchQueue, graph[name]...)
-
-	var chekedPersons []string //уже проверенные люди
-	var person string
-
-	for len(searchQueue) != 0 { //Пока очередь не пуста
-		person = searchQueue[0]       //Проверяем первую персону в очереди
-		searchQueue = searchQueue[1:] //Выводим из очереди текущую персону
-		if isInChekedPerson(person, chekedPersons) {
+func search(start, target string, graph map[string][]string) {
+	searchQueue := []string{start}
+	var chekedPersons []string
+	for len(searchQueue) > 0 {
+		person := searchQueue[0]
+		searchQueue = searchQueue[1:]
+		if isInChekedPersons(person, chekedPersons) {
 			continue
 		}
-		if isSeller(person) {
-			println(person + " is mango seller!")
-			return true
+		ok := isTarget(target, person)
+		if ok {
+			fmt.Printf("Нашли связь с %s\n", target)
+			return
 		}
-
-		//расширяем очередь новыми связями
 		searchQueue = append(searchQueue, graph[person]...)
-
-		//добавляем проверенную персону в список проверенных
 		chekedPersons = append(chekedPersons, person)
 	}
-	return false
+	fmt.Println("Связь не найдена")
 }
 
-func isInChekedPerson(person string, searched []string) bool {
-	for _, n := range searched {
-		if n == person {
+func isInChekedPersons(person string, chekedPersons []string) bool {
+	for _, el := range chekedPersons {
+		if el == person {
 			return true
 		}
 	}
 	return false
 }
 
-func isSeller(name string) bool {
-	return name[len(name)-1] == 'm'
+func isTarget(target, person string) bool {
+	return target == person
 }
