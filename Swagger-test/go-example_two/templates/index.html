@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Я, golang-инженер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #ecf0f1;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #34495e;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .block {
+            border: 1px solid #ecf0f1;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: #2c3e50;
+        }
+        .button {
+            display: inline-block;
+            margin: 10px;
+            padding: 10px 20px;
+            color: white;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #2980b9;
+        }
+        form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+        }
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ecf0f1;
+            border-radius: 5px;
+        }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Тестируем backend+frontend и Swagger/OpenAPI</h1>
+        <p>Эндпоинты по CRUD-операциям на товары:</p>
+
+        <div class="block">
+            <h3>Создать товар - Crud (Create)</h3>
+            <form id="create-form" onsubmit="createItem(event)">
+                <label for="product">Наименование товара:</label>
+                <input type="text" id="product" required>
+                <label for="price">Цена:</label>
+                <input type="text" id="price" required>
+                <button type="submit" class="button">Создать (POST)</button>
+            </form>
+        </div>
+
+        <!-- Блок для PUT запроса -->
+        <div class="block">
+            <h3>Обновить всю информацию о товаре (PUT) - crUd (Update)</h3>
+            <form id="update-form" onsubmit="updateItem(event)">
+                <label for="old-product">Старое название товара:</label>
+                <input type="text" id="old-product" required>
+                <label for="new-product">Новое название товара:</label>
+                <input type="text" id="new-product" required>
+                <label for="update-price">Новая цена:</label>
+                <input type="text" id="update-price" required>
+                <button type="submit" class="button">Обновить (PUT)</button>
+            </form>
+        </div>
+
+        <!-- Блок для PATCH запроса -->
+        <div class="block">
+            <h3>Обновить цену товара (PATCH) - crUd (Update)</h3>
+            <form id="patch-form" onsubmit="patchItem(event)">
+                <label for="patch-product">Название товара:</label>
+                <input type="text" id="patch-product" required>
+                <label for="patch-price">Новая цена:</label>
+                <input type="text" id="patch-price" required>
+                <button type="submit" class="button">Обновить цену (PATCH)</button>
+            </form>
+        </div>
+
+        <div class="block">
+            <h3>Удалить товар - cruD (Delete)</h3>
+            <form id="delete-form" onsubmit="deleteItem(event)">
+                <label for="delete-product">Наименование товара:</label>
+                <input type="text" id="delete-product" required>
+                <button type="submit" class="button">Удалить (DELETE)</button>
+            </form>
+        </div>
+
+        <div class="block">
+            <h3>Показать товар по наименованию - cRud (Read)</h3>
+            <form id="show-form" onsubmit="showItem(event)">
+                <label for="show-product">Наименование товара:</label>
+                <input type="text" id="show-product" required>
+                <button type="submit" class="button">Показать (GET)</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        async function createItem(event) {
+            event.preventDefault();
+            const product = document.getElementById('product').value;
+            const priceString = document.getElementById('price').value;
+            const price = parseFloat(priceString);
+
+            if (isNaN(price) || price < 0) {
+                alert('Цена должна быть числом и больше нуля');
+                return;
+            }
+
+            const response = await fetch('/home/create_item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product, price }),
+            });
+
+            if (response.ok) {
+                alert('Товар успешно создан');
+            } else {
+                alert('Ошибка создания товара');
+            }
+        }
+
+        async function updateItem(event) {
+            event.preventDefault();
+            const oldProduct = document.getElementById('old-product').value; // Старое имя товара
+            const newProduct = document.getElementById('new-product').value; // Новое имя товара
+            const priceString = document.getElementById('update-price').value; // Новая цена
+            const price = parseFloat(priceString);
+
+            if (isNaN(price) || price < 0) {
+                alert('Цена должна быть числом и больше нуля');
+                return;
+            }
+
+            const response = await fetch(`/home/update_item/${encodeURIComponent(oldProduct)}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product: newProduct, price }), // Отправляем новое имя и цену
+            });
+
+            if (response.ok) {
+                alert('Товар успешно обновлён');
+            } else {
+                alert('Ошибка обновления товара');
+            }
+        }
+
+        async function patchItem(event) {
+            event.preventDefault();
+            const product = document.getElementById('patch-product').value; // Название товара
+            const priceString = document.getElementById('patch-price').value; // Новая цена
+            const price = parseFloat(priceString);
+
+            if (isNaN(price) || price < 0) {
+                alert('Цена должна быть числом и больше нуля');
+                return;
+            }
+
+            const response = await fetch(`/home/update_item/${encodeURIComponent(product)}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ price }), // Отправляем только новую цену
+            });
+
+            if (response.ok) {
+                alert('Цена товара успешно обновлена');
+            } else {
+                alert('Ошибка обновления цены товара');
+            }
+        }
+
+        async function deleteItem(event) {
+            event.preventDefault();
+            const product = document.getElementById('delete-product').value;
+
+            const response = await fetch(`/home/delete_item/${product}`, {
+                method: 'DELETE',
+            });
+
+            if (response.ok) {
+                alert('Товар успешно удалён');
+            } else {
+                alert('Ошибка удаления товара');
+            }
+        }
+
+        async function showItem(event) {
+            event.preventDefault();
+            const product = document.getElementById('show-product').value;
+
+            const response = await fetch(`/home/item/${product}`, {
+                method: 'GET',
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert('Товар: ' + JSON.stringify(data));
+            } else {
+                alert('Товар не найден');
+            }
+        }
+    </script>
+</body>
+</html>

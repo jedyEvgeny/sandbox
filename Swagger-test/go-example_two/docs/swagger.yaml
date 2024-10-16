@@ -1,0 +1,217 @@
+basePath: /home
+consumes:
+- application/json
+definitions:
+  handlers.Item:
+    properties:
+      price:
+        example: 264.5
+        type: number
+      product:
+        example: Ананас
+        type: string
+    type: object
+  handlers.ItemPrice:
+    properties:
+      price:
+        example: "264.50"
+        type: string
+    type: object
+  handlers.Resourse:
+    properties:
+      id:
+        example: Ананас.txt
+        type: string
+    type: object
+externalDocs:
+  description: Резерв для дополнительного описания API
+  url: https://t.me/+ZGac_D1V4wFjYzRi
+host: localhost:8080
+info:
+  contact:
+    email: KEF1991@yandex.ru
+    name: Евгений
+    url: https://github.com/jedyEvgeny
+  description: Тестируем бэкенд с фронтендом по CRUD-запросам
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/MIT
+  title: Я, Golang-инженер
+  version: "1.0"
+paths:
+  /home/create_item:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Создает новый товар с указанным именем и ценой.
+        Наименование и цена передаются в теле в json-объекте.
+        Если товар не удается создать, возвращает ошибку.
+      parameters:
+      - description: Создаем новый товар
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Item'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Товар успешно создан
+          schema:
+            $ref: '#/definitions/handlers.Resourse'
+        "400":
+          description: Ошибка валидации данных
+        "405":
+          description: Метод не разрешен
+        "500":
+          description: Ошибка сервера
+      summary: Создать новый товар
+      tags:
+      - items
+  /home/create_item/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Обновляет стоимость товара.
+        Наименование товара передаётся как часть эндпоинта.
+        Стоимость передаётся в теле в json-объекта.
+        Если товар не удается обновить, возвращает ошибку.
+      parameters:
+      - description: Создаем новый товар
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.ItemPrice'
+      - description: Обновляем существующий товар
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "204":
+          description: Цена обновлена
+        "400":
+          description: Ошибка валидации данных
+        "405":
+          description: Метод не разрешен
+        "500":
+          description: Ошибка сервера
+      summary: Обновляем стоимость товара
+      tags:
+      - items
+    put:
+      consumes:
+      - application/json
+      description: |-
+        Обновляет наименование и стоимость товара.
+        Текущее наименование товара передаётся как часть эндпоинта.
+        Новое наименование товара и стоимость передаётся в теле запроса json-объектом.
+        Если товар не удается обновить, возвращает ошибку.
+      parameters:
+      - description: Создаем новый товар
+        in: body
+        name: item
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Item'
+      - description: Обновляем существующий товар
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "204":
+          description: Наименование и цена товара обновлены
+        "400":
+          description: Ошибка валидации данных
+        "405":
+          description: Метод не разрешен
+        "500":
+          description: Ошибка сервера
+      summary: Обновляем товар
+      tags:
+      - items
+  /home/delete_item/{id}:
+    delete:
+      description: |-
+        Удаляет товар по наименованию
+        Наименование товара передаётся в эндпоинте
+        Если товар не удается удалить, возвращает ошибку.
+      parameters:
+      - description: Удаляем товар
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "204":
+          description: Товар успешно удалён
+        "404":
+          description: 'Нечего удалять: товар не найден'
+          schema:
+            type: string
+        "405":
+          description: Метод не разрешен
+          schema:
+            type: string
+        "500":
+          description: Ошибка сервера
+          schema:
+            type: string
+      summary: Удалить товар
+      tags:
+      - items
+  /home/item/{id}:
+    get:
+      description: |-
+        Получает наименование и цену товара.
+        Наименование товара передаётся как часть эндпоинта.
+        Если товар не удается найти, возвращает ошибку.
+      parameters:
+      - description: Обновляем существующий товар
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о товаре получена
+          schema:
+            $ref: '#/definitions/handlers.Item'
+        "404":
+          description: Товар не найден
+        "405":
+          description: Метод не разрешен
+        "500":
+          description: Ошибка сервера
+      summary: Получаем информацию о товаре
+      tags:
+      - items
+produces:
+- json text/plain
+schemes:
+- http
+- https
+swagger: "2.0"
+tags:
+- description: Операции с товарами
+  externalDocs:
+    description: Консультация по работе с товарами
+    url: https://t.me/EvKly
+  name: items
+x-name:
+  environment: production
+  team: backend
+  version: 1.0.0
