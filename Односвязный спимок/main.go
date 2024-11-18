@@ -1,4 +1,3 @@
-//Тренерую односвязные списки
 package main
 
 import (
@@ -71,6 +70,7 @@ func (l *singlyLinkedList) findValNodePerIdx(idx int) (*node, bool) {
 		if i == idx {
 			return currNode, true
 		}
+		currNode = currNode.next
 	}
 	return nil, false
 }
