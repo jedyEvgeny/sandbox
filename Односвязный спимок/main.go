@@ -1,74 +1,97 @@
-//Тренируюсь работать с односвязным списком
-
+//Тренерую односвязные списки
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
-// Node определяет узел односвязного списка
-type Node struct {
-	Value int
-	Next  *Node
+type node struct {
+	value int
+	next  *node
 }
 
-// SinglyLinkedList предоставляет односвязный список
-type SinglyLinkedList struct {
-	Head *Node
+type singlyLinkedList struct {
+	head *node
 }
 
 func main() {
-	list := &SinglyLinkedList{}
-	list.Add(1)
-	list.Add(2)
-	list.Add(3)
-
-	fmt.Print("Содержимое списка: ")
-	list.Print()
-
-	if node, found := list.Get(1); found {
-		fmt.Println("Элемент на индексе 1:", node.Value)
-	} else {
-		fmt.Println("Элемент не найден на индексе 1")
+	l := singlyLinkedList{}
+	list := &l
+	for i := 1; i < 4; i++ {
+		list.add(i)
 	}
+	list.print()
 
-	if node, found := list.Get(5); found {
-		fmt.Println("Элемент на индексе 5:", node.Value)
-	} else {
-		fmt.Println("Элемент не найден на индексе 5")
+	for i := 0; i < 4; i++ {
+		node, ok := list.findValNodePerIdx(i)
+		if ok {
+			fmt.Printf("Значение %d-го элемента очереди равено: %d\n",
+				i, node.value)
+		}
+		if !ok {
+			fmt.Printf("%d-й элемент в очереди отсутствует\n", i)
+		}
 	}
+	list.reverse()
+	list.print()
+
 }
 
-// Add добавляет новый элемент в конец списка
-func (list *SinglyLinkedList) Add(value int) {
-	newNode := &Node{Value: value}
-	if list.Head == nil {
-		list.Head = newNode
+func (l *singlyLinkedList) add(value int) {
+	n := node{value: value}
+	node := &n
+	if l.head == nil {
+		l.head = node
 		return
 	}
 
-	now := list.Head
-	for now.Next != nil {
-		now = now.Next
+	currNode := l.head
+	for currNode.next != nil {
+		currNode = currNode.next
 	}
-	now.Next = newNode
+	currNode.next = node
 }
 
-// Print печатает элементы односвязного списка
-func (list *SinglyLinkedList) Print() {
-	now := list.Head
-	for now != nil {
-		fmt.Print(now.Value, " ")
-		now = now.Next
+func (l *singlyLinkedList) print() {
+	strSep := strings.Repeat("-", 30)
+	fmt.Println(strSep)
+	currNode := l.head
+	for i := 0; currNode != nil; i++ {
+		fmt.Printf("Значение %d-го элемента списка равен: %d\n",
+			i, currNode.value)
+		currNode = currNode.next
 	}
-	fmt.Println()
+	fmt.Println(strSep)
 }
 
-func (list *SinglyLinkedList) Get(idx int) (*Node, bool) {
-	now := list.Head
-	for i := 0; now != nil; i++ {
+func (l *singlyLinkedList) findValNodePerIdx(idx int) (*node, bool) {
+	currNode := l.head
+	for i := 0; currNode != nil; i++ {
 		if i == idx {
-			return now, true
+			return currNode, true
 		}
-		now = now.Next
 	}
 	return nil, false
+}
+
+func (l *singlyLinkedList) rev() {
+	var prev *node
+	currNode := l.head
+	for currNode != nil {
+		currNode.next, prev, currNode = prev, currNode, currNode.next
+	}
+}
+
+func (l *singlyLinkedList) reverse() {
+	var prev *node
+	currNode := l.head
+
+	for currNode != nil {
+		next := currNode.next //Сохраняем следующий узел
+		currNode.next = prev  //Присваиваем в текущем узле полю сл. узла последний узел
+		prev = currNode       //Присваиваем переменной текущий узел
+		currNode = next       //Переходим к следующему узлу
+	}
+	l.head = prev
 }
