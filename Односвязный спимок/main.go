@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type node struct {
 	value int
@@ -15,31 +12,25 @@ type singlyLinkedList struct {
 }
 
 func main() {
-	l := singlyLinkedList{}
-	list := &l
-	for i := 1; i < 4; i++ {
-		list.add(i)
+	l := &singlyLinkedList{}
+	for i := 100; i < 104; i++ {
+		l.add(i)
 	}
-	list.print()
+	l.print()
 
-	for i := 0; i < 4; i++ {
-		node, ok := list.findValNodePerIdx(i)
-		if ok {
-			fmt.Printf("Значение %d-го элемента очереди равено: %d\n",
-				i, node.value)
-		}
-		if !ok {
-			fmt.Printf("%d-й элемент в очереди отсутствует\n", i)
-		}
-	}
-	list.reverse()
-	list.print()
+	idx := 2
+	val, ok := l.findNode(idx)
+	printVal(idx, val, ok)
 
+	l.reverse()
+	l.print()
+
+	l.delete(idx)
+	l.print()
 }
 
-func (l *singlyLinkedList) add(value int) {
-	n := node{value: value}
-	node := &n
+func (l *singlyLinkedList) add(val int) {
+	node := &node{value: val}
 	if l.head == nil {
 		l.head = node
 		return
@@ -53,45 +44,70 @@ func (l *singlyLinkedList) add(value int) {
 }
 
 func (l *singlyLinkedList) print() {
-	strSep := strings.Repeat("-", 30)
-	fmt.Println(strSep)
+	fmt.Printf("Элементы списка:")
 	currNode := l.head
-	for i := 0; currNode != nil; i++ {
-		fmt.Printf("Значение %d-го элемента списка равен: %d\n",
-			i, currNode.value)
+	for currNode != nil {
+		fmt.Printf("%d->", currNode.value)
 		currNode = currNode.next
 	}
-	fmt.Println(strSep)
+	fmt.Printf("nil\n\n")
 }
 
-func (l *singlyLinkedList) findValNodePerIdx(idx int) (*node, bool) {
+func (l *singlyLinkedList) findNode(idx int) (int, bool) {
 	currNode := l.head
-	for i := 0; currNode != nil; i++ {
+	for i := 0; currNode != nil && i <= idx; i++ {
 		if i == idx {
-			return currNode, true
+			return currNode.value, true
 		}
 		currNode = currNode.next
 	}
-	return nil, false
+	return 0, false
 }
 
-func (l *singlyLinkedList) rev() {
-	var prev *node
-	currNode := l.head
-	for currNode != nil {
-		currNode.next, prev, currNode = prev, currNode, currNode.next
+func printVal(idx, val int, ok bool) {
+	if ok {
+		fmt.Printf("Для %d-го элемента значение равно: %d\n\n",
+			idx, val)
+	}
+	if !ok {
+		fmt.Printf("%d-й элемент в списке отсутствует\n\n", idx)
 	}
 }
 
 func (l *singlyLinkedList) reverse() {
 	var prev *node
 	currNode := l.head
-
 	for currNode != nil {
-		next := currNode.next //Сохраняем следующий узел
-		currNode.next = prev  //Присваиваем в текущем узле полю сл. узла последний узел
-		prev = currNode       //Присваиваем переменной текущий узел
-		currNode = next       //Переходим к следующему узлу
+		next := currNode.next
+		currNode.next = prev
+		prev = currNode
+		currNode = next
 	}
 	l.head = prev
+}
+
+func (l *singlyLinkedList) delete(idx int) {
+	if l.head == nil {
+		fmt.Println("Список пуст, нечего удалять.")
+		return
+	}
+
+	if idx == 0 {
+		l.head = l.head.next
+		return
+	}
+
+	prevNode := l.head
+	currNode := l.head.next
+	for i := 1; currNode != nil && i < idx; i++ {
+		prevNode = currNode
+		currNode = currNode.next
+	}
+
+	if currNode == nil {
+		fmt.Printf("Индекс %d выходит за пределы списка.\n", idx)
+		return
+	}
+
+	prevNode.next = currNode.next
 }
