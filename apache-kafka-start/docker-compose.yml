@@ -1,0 +1,32 @@
+services:
+  zookeeper-sandbox:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper-sandbox
+    container_name: zookeeper-sandbox-container
+    ports:
+      - "2182:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka-broker-sandbox:
+    image: confluentinc/cp-kafka:7.5.0
+    hostname: kafka-broker-sandbox
+    container_name: kafka-broker-sandbox-container
+    depends_on:
+      - zookeeper-sandbox
+    ports:
+      - "9093:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper-sandbox:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-sandbox:29092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+
+networks:
+  default:
+    name: kafka-net-sandbox
